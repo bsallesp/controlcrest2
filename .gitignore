@@ -1,0 +1,13 @@
+# Credenciais e segredos
+.env
+temp/.env
+*.env.local
+
+# Build output (contém chave injetada)
+LandingPage/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
