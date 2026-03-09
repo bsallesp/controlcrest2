@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TV Mounting Boca Raton | Same-Day Professional Installation</title>
+  <script src="env.js"></script>
   <meta name="description" content="Professional TV mounting in Boca Raton. Same-day service, concealed wiring, soundbar installation. Call now for fast installation.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,11 +180,44 @@
     .contact-form input::placeholder,
     .contact-form textarea::placeholder { color: var(--text-muted); }
     .contact-form textarea { min-height: 100px; resize: vertical; }
-    .contact-form button { align-self: center; min-width: 160px; }
-    .address-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-    .address-row input[type="text"] { flex: 1; min-width: 0; }
-    .btn-location { padding: 0.5rem; min-width: 3rem; min-height: 3rem; width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; }
-    .btn-location svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+    .contact-form button:not(.btn-location) { align-self: center; min-width: 160px; }
+    .address-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: var(--bg);
+    }
+    .address-input-wrap input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      padding-right: 3rem;
+    }
+    .address-input-wrap input:focus { outline: none; }
+    .address-input-wrap .btn-location {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 2.75rem;
+      min-width: 2.75rem;
+      margin: 0;
+      border: none;
+      border-radius: 0 7px 7px 0;
+      background: transparent;
+      color: var(--accent);
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      cursor: pointer;
+    }
+    .address-input-wrap .btn-location:hover { background: rgba(232, 184, 74, 0.1); }
+    .btn-location svg { width: 1.25rem; height: 1.25rem; }
 
     /* Google Places autocomplete dropdown */
     .pac-container { z-index: 9999 !important; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: var(--surface) !important; margin-top: 4px; }
@@ -323,7 +357,7 @@
         <input type="text" name="name" placeholder="Name" required>
         <input type="tel" name="phone" placeholder="Phone" required>
         <textarea name="message" placeholder="TV size, wall type, or question (optional)"></textarea>
-        <div class="address-row">
+        <div class="address-input-wrap">
           <input type="text" id="address" placeholder="Address (street, city, ZIP)" autocomplete="nope" required>
           <button type="button" class="btn btn-secondary btn-location" id="use-location" aria-label="Use my location" title="Use my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
@@ -353,9 +387,10 @@
   </script>
   <script>
     (function() {
-      var apiKey = 'YOUR_GOOGLE_PLACES_API_KEY';
+      // Chave vem de env.js (gerado por build.py a partir de temp/.env) ou do placeholder
+      var apiKey = (typeof window.__GOOGLE_API_KEY__ !== 'undefined' && window.__GOOGLE_API_KEY__) ? window.__GOOGLE_API_KEY__ : 'YOUR_GOOGLE_PLACES_API_KEY';
       if (!apiKey || apiKey === 'YOUR_GOOGLE_PLACES_API_KEY') {
-        console.warn('[Address autocomplete] Nao funciona: chave GCP ausente.');
+        console.warn('[Address autocomplete] Chave GCP ausente. Coloque sua API key em apiKey (Google Cloud Console > APIs & Services > Credentials).');
         return;
       }
       function initAutocomplete() {
@@ -387,8 +422,25 @@
         var btnLocation = document.getElementById('use-location');
         if (btnLocation) {
           var iconHtml = btnLocation.innerHTML;
+          function restoreBtn() {
+            btnLocation.disabled = false;
+            btnLocation.innerHTML = iconHtml;
+          }
+          function setAddress(addr) {
+            input.value = addr;
+            if (hidden) hidden.value = addr;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          function reverseGeocodeFallback(lat, lng, done) {
+            fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json', {
+              headers: { 'Accept': 'application/json', 'User-Agent': 'ControlCrest-LandingPage' }
+            }).then(function(r) { return r.json(); })
+              .then(function(data) { done(data && data.display_name ? data.display_name : null); })
+              .catch(function() { done(null); });
+          }
           btnLocation.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('[Location] Botão clicado');
             if (!navigator.geolocation) {
               input.placeholder = 'Geolocation not supported';
               return;
@@ -399,21 +451,30 @@
               function(pos) {
                 var lat = pos.coords.latitude;
                 var lng = pos.coords.longitude;
-                var geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
-                  btnLocation.disabled = false;
-                  btnLocation.innerHTML = iconHtml;
-                  if (status === 'OK' && results && results[0]) {
-                    input.value = results[0].formatted_address;
-                    if (hidden) hidden.value = results[0].formatted_address;
-                  } else {
-                    input.placeholder = 'Could not get address';
+                function applyAndRestore(addr) {
+                  restoreBtn();
+                  if (addr) setAddress(addr);
+                  else input.placeholder = 'Could not get address';
+                }
+                if (window.google && google.maps && google.maps.Geocoder) {
+                  try {
+                    var geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
+                      if (status === 'OK' && results && results[0]) {
+                        applyAndRestore(results[0].formatted_address);
+                      } else {
+                        reverseGeocodeFallback(lat, lng, applyAndRestore);
+                      }
+                    });
+                  } catch (err) {
+                    reverseGeocodeFallback(lat, lng, applyAndRestore);
                   }
-                });
+                } else {
+                  reverseGeocodeFallback(lat, lng, applyAndRestore);
+                }
               },
               function(err) {
-                btnLocation.disabled = false;
-                btnLocation.innerHTML = iconHtml;
+                restoreBtn();
                 if (err.code === 1) input.placeholder = 'Allow location in browser settings';
                 else if (err.code === 3) input.placeholder = 'Location timeout – try again';
                 else input.placeholder = 'Location unavailable (use HTTPS or allow location)';

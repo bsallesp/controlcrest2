@@ -2,8 +2,8 @@
 """
 Gera dist/index.html (com a chave do .env) e sobe um servidor local para testar.
 Uso (na raiz do projeto): python LandingPage/serve.py
-Abre http://localhost:8765 — o autocomplete só funciona com GOOGLE_API_KEY no temp/.env
-e com a chave no GCP permitindo referrer http://localhost:8765/*
+Abre http://localhost:8080 — o autocomplete só funciona com GOOGLE_API_KEY no temp/.env
+e com a chave no GCP permitindo referrer http://localhost:8080/*
 """
 import os
 import sys
@@ -22,7 +22,7 @@ import LandingPage.build as build_module
 build_module.main()
 
 DIST = ROOT / "LandingPage" / "dist"
-PORT = 8765
+PORT = 8080
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):

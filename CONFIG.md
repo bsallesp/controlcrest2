@@ -17,7 +17,7 @@ Defina **GOOGLE_API_KEY** e **PHONE** em `temp/.env`. O build (rodado pelo `serv
 
 
 
-Se a chave GCP tiver restrição de referrer, inclua `http://localhost:8765/*` e o domínio de produção.
+Se a chave GCP tiver restrição de referrer, inclua `http://localhost:8080/*` e o domínio de produção.
 
 ---
 

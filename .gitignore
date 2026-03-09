@@ -5,6 +5,7 @@ temp/.env
 
 # Build output (contém chave injetada)
 LandingPage/dist/
+LandingPage/env.js
 
 # Python
 __pycache__/

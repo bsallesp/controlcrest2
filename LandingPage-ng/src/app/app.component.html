@@ -1,0 +1,81 @@
+<header class="hero">
+  <div class="container">
+    <h1>TV Mounting in Boca Raton</h1>
+    <p class="subtitle">Same-Day Professional Installation</p>
+    <div class="cta-group">
+      <a [href]="'tel:' + phone" class="btn btn-primary btn-tel">📞 Call Now</a>
+      <a href="#contact" class="btn btn-secondary">Get Quote</a>
+    </div>
+  </div>
+</header>
+
+<section id="services">
+  <div class="container reveal">
+    <h2>Services</h2>
+    <div class="services-grid">
+      <div class="service-card"><strong>TV wall mounting</strong> Secure, level install</div>
+      <div class="service-card"><strong>Above fireplace</strong> Heat-safe solutions</div>
+      <div class="service-card"><strong>Ceiling TV mount</strong> Flush or tilt</div>
+      <div class="service-card"><strong>Concealed wiring</strong> Clean, hidden cables</div>
+      <div class="service-card"><strong>Soundbar install</strong> Sync with your TV</div>
+    </div>
+  </div>
+</section>
+
+<section id="benefits">
+  <div class="container reveal">
+    <h2>Why Choose Us</h2>
+    <ul class="benefits-list">
+      <li>Same-day availability when you need it</li>
+      <li>Clean, professional finish every time</li>
+      <li>No visible wires — concealed routing</li>
+      <li>Fully equipped installer — no extra runs</li>
+    </ul>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="container reveal">
+    <h2>Recent Work</h2>
+    <div class="gallery">
+      <div class="gallery-item">Add your photo 1</div>
+      <div class="gallery-item">Add your photo 2</div>
+      <div class="gallery-item">Add your photo 3</div>
+      <div class="gallery-item">Add your photo 4</div>
+    </div>
+    <p class="gallery-note">Replace placeholders with real job photos (before/after, mounted TVs, hidden wires).</p>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container reveal">
+    <h2>Get in Touch</h2>
+    <div class="contact-options">
+      <a [href]="'tel:' + phone" class="contact-option">📞 {{ phone }}</a>
+      <a [href]="'sms:' + phone" class="contact-option">💬 Text us</a>
+    </div>
+    <form class="contact-form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+      <input type="text" formControlName="name" placeholder="Name" required>
+      <input type="tel" formControlName="phone" placeholder="Phone" required>
+      <textarea formControlName="message" placeholder="TV size, wall type, or question (optional)"></textarea>
+      <div class="address-input-wrap">
+        <input type="text" #addressInput formControlName="address" placeholder="Address (street, city, ZIP)" autocomplete="nope" required>
+        <button type="button" class="btn btn-secondary btn-location" (click)="useLocation()" [disabled]="locationLoading" aria-label="Use my location" title="Use my location">
+          @if (locationLoading) {
+            <span style="opacity:0.7">…</span>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+          }
+        </button>
+      </div>
+      <button type="submit" class="btn btn-primary">Request Quote</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Serving Boca Raton, Delray Beach, Parkland, Weston &amp; surrounding areas.</p>
+    <p><a [href]="'tel:' + phone">{{ phone }}</a></p>
+  </div>
+</footer>

@@ -53,7 +53,10 @@ def main():
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print("Gerado:", out_path)
+    env_js_path = os.path.join(root, "LandingPage", "env.js")
+    with open(env_js_path, "w", encoding="utf-8") as f:
+        f.write("window.__GOOGLE_API_KEY__ = " + repr(api_key) + ";\n")
+    print("Gerado:", out_path, "e", env_js_path)
 
 if __name__ == "__main__":
     main()
