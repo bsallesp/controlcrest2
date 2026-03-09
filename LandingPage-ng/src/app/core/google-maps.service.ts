@@ -27,16 +27,13 @@ export class GoogleMapsService {
     if (!this.hasValidKey) {
       return Promise.reject(new Error('Google API key not configured'));
     }
-    if (window.google?.maps?.places) {
-      return Promise.resolve();
-    }
     if (this.loadPromise) {
       return this.loadPromise;
     }
     this.loadPromise = new Promise((resolve, reject) => {
       window.initGoogleMaps = () => resolve();
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(this.apiKey)}&libraries=places&callback=initGoogleMaps`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(this.apiKey)}&loading=async&libraries=places&callback=initGoogleMaps`;
       script.async = true;
       script.defer = true;
       script.onerror = () => reject(new Error('Failed to load Google Maps'));
@@ -45,25 +42,31 @@ export class GoogleMapsService {
     return this.loadPromise;
   }
 
-  initAutocomplete(input: HTMLInputElement, onPlaceSelect: (address: string) => void): () => void {
-    if (!window.google?.maps?.places) return () => {};
-    const bounds = new google.maps.LatLngBounds(
-      new google.maps.LatLng(24.5, -82.0),
-      new google.maps.LatLng(27.0, -80.0)
-    );
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ['address'],
-      bounds,
-      strictBounds: true,
-      fields: ['formatted_address', 'address_components']
+  async createPlaceAutocompleteElement(
+    container: HTMLElement,
+    onPlaceSelect: (address: string) => void
+  ): Promise<() => void> {
+    await google.maps.importLibrary('places');
+    const locationRestriction = { north: 27.0, south: 24.5, east: -80.0, west: -82.0 };
+    const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+      locationRestriction
     });
-    const listener = autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place.formatted_address) {
-        onPlaceSelect(place.formatted_address);
+    placeAutocomplete.id = 'place-autocomplete-input';
+    container.appendChild(placeAutocomplete);
+    const handler = async (ev: { placePrediction?: { toPlace: () => Promise<google.maps.places.Place> } }) => {
+      const placePrediction = ev.placePrediction;
+      if (!placePrediction) return;
+      const place = await placePrediction.toPlace();
+      await place.fetchFields({ fields: ['formattedAddress'] });
+      if (place.formattedAddress) {
+        onPlaceSelect(place.formattedAddress);
       }
-    });
-    return () => listener.remove();
+    };
+    placeAutocomplete.addEventListener('gmp-select', handler as EventListener);
+    return () => {
+      placeAutocomplete.removeEventListener('gmp-select', handler as EventListener);
+      placeAutocomplete.remove();
+    };
   }
 
   reverseGeocode(lat: number, lng: number): Promise<string | null> {

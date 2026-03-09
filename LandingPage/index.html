@@ -189,14 +189,28 @@
       border: 1px solid rgba(255,255,255,0.15);
       background: var(--bg);
     }
-    .address-input-wrap input {
+    .place-autocomplete-container {
       flex: 1;
       min-width: 0;
-      border: none;
-      background: transparent;
-      padding-right: 3rem;
+      display: flex;
+      align-items: stretch;
     }
-    .address-input-wrap input:focus { outline: none; }
+    .place-autocomplete-container gmp-place-autocomplete,
+    .place-autocomplete-container input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    .address-display {
+      flex: 1;
+      min-width: 0;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+    }
     .address-input-wrap .btn-location {
       position: absolute;
       right: 0;
@@ -358,10 +372,11 @@
         <input type="tel" name="phone" placeholder="Phone" required>
         <textarea name="message" placeholder="TV size, wall type, or question (optional)"></textarea>
         <div class="address-input-wrap">
-          <input type="text" id="address" placeholder="Address (street, city, ZIP)" autocomplete="nope" required>
+          <div id="place-autocomplete-container" class="place-autocomplete-container"></div>
+          <div id="address-display" class="address-display" style="display:none;"></div>
           <button type="button" class="btn btn-secondary btn-location" id="use-location" aria-label="Use my location" title="Use my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
-        <input type="hidden" name="address" id="address-value">
+        <input type="hidden" name="address" id="address-value" required>
         <button type="submit" class="btn btn-primary">Request Quote</button>
       </form>
     </div>
@@ -387,36 +402,37 @@
   </script>
   <script>
     (function() {
-      // Chave vem de env.js (gerado por build.py a partir de temp/.env) ou do placeholder
       var apiKey = (typeof window.__GOOGLE_API_KEY__ !== 'undefined' && window.__GOOGLE_API_KEY__) ? window.__GOOGLE_API_KEY__ : 'YOUR_GOOGLE_PLACES_API_KEY';
       if (!apiKey || apiKey === 'YOUR_GOOGLE_PLACES_API_KEY') {
         console.warn('[Address autocomplete] Chave GCP ausente. Coloque sua API key em apiKey (Google Cloud Console > APIs & Services > Credentials).');
         return;
       }
-      function initAutocomplete() {
-        var input = document.getElementById('address');
-        if (!input) return;
-        var southFloridaBounds = new google.maps.LatLngBounds(
-          new google.maps.LatLng(24.5, -82.0),
-          new google.maps.LatLng(27.0, -80.0)
-        );
-        var autocomplete = new google.maps.places.Autocomplete(input, {
-          types: ['address'],
-          bounds: southFloridaBounds,
-          strictBounds: true,
-          fields: ['formatted_address', 'address_components']
-        });
+      window.initPlaceAutocomplete = async function() {
+        var container = document.getElementById('place-autocomplete-container');
+        var addressDisplay = document.getElementById('address-display');
         var hidden = document.getElementById('address-value');
-        function syncAddress() {
-          if (hidden) hidden.value = input.value;
+        if (!container || !hidden) return;
+        try {
+          await google.maps.importLibrary('places');
+        } catch (e) {
+          console.warn('[Place Autocomplete] importLibrary failed', e);
+          return;
         }
-        input.addEventListener('input', syncAddress);
-        input.addEventListener('change', syncAddress);
-        autocomplete.addListener('place_changed', function() {
-          var place = autocomplete.getPlace();
-          if (place.formatted_address) {
-            input.value = place.formatted_address;
-            if (hidden) hidden.value = place.formatted_address;
+        var southFloridaBounds = { north: 27.0, south: 24.5, east: -80.0, west: -82.0 };
+        var placeAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+          locationRestriction: southFloridaBounds
+        });
+        placeAutocomplete.id = 'place-autocomplete-input';
+        container.appendChild(placeAutocomplete);
+        placeAutocomplete.addEventListener('gmp-select', async function(ev) {
+          var placePrediction = ev.placePrediction;
+          if (!placePrediction) return;
+          var place = placePrediction.toPlace();
+          await place.fetchFields({ fields: ['formattedAddress'] });
+          if (place.formattedAddress && hidden) {
+            hidden.value = place.formattedAddress;
+            if (addressDisplay) { addressDisplay.style.display = 'none'; addressDisplay.textContent = ''; }
+            if (container) container.style.display = '';
           }
         });
         var btnLocation = document.getElementById('use-location');
@@ -426,69 +442,51 @@
             btnLocation.disabled = false;
             btnLocation.innerHTML = iconHtml;
           }
-          function setAddress(addr) {
-            input.value = addr;
+          function setAddressFromLocation(addr) {
             if (hidden) hidden.value = addr;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
+            if (addressDisplay && container) {
+              addressDisplay.textContent = addr;
+              addressDisplay.style.display = 'block';
+              container.style.display = 'none';
+            }
+            restoreBtn();
           }
           function reverseGeocodeFallback(lat, lng, done) {
             fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json', {
               headers: { 'Accept': 'application/json', 'User-Agent': 'ControlCrest-LandingPage' }
-            }).then(function(r) { return r.json(); })
-              .then(function(data) { done(data && data.display_name ? data.display_name : null); })
-              .catch(function() { done(null); });
+            }).then(function(r) { return r.json(); }).then(function(data) { done(data && data.display_name ? data.display_name : null); }).catch(function() { done(null); });
           }
           btnLocation.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('[Location] Botão clicado');
-            if (!navigator.geolocation) {
-              input.placeholder = 'Geolocation not supported';
-              return;
-            }
+            if (!navigator.geolocation) return;
             btnLocation.disabled = true;
             btnLocation.innerHTML = '<span style="opacity:0.7">…</span>';
             navigator.geolocation.getCurrentPosition(
               function(pos) {
-                var lat = pos.coords.latitude;
-                var lng = pos.coords.longitude;
-                function applyAndRestore(addr) {
-                  restoreBtn();
-                  if (addr) setAddress(addr);
-                  else input.placeholder = 'Could not get address';
+                var lat = pos.coords.latitude, lng = pos.coords.longitude;
+                function apply(addr) {
+                  if (addr) setAddressFromLocation(addr); else restoreBtn();
                 }
                 if (window.google && google.maps && google.maps.Geocoder) {
                   try {
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
-                      if (status === 'OK' && results && results[0]) {
-                        applyAndRestore(results[0].formatted_address);
-                      } else {
-                        reverseGeocodeFallback(lat, lng, applyAndRestore);
-                      }
+                      if (status === 'OK' && results && results[0]) apply(results[0].formatted_address);
+                      else reverseGeocodeFallback(lat, lng, apply);
                     });
-                  } catch (err) {
-                    reverseGeocodeFallback(lat, lng, applyAndRestore);
-                  }
-                } else {
-                  reverseGeocodeFallback(lat, lng, applyAndRestore);
-                }
+                  } catch (err) { reverseGeocodeFallback(lat, lng, apply); }
+                } else { reverseGeocodeFallback(lat, lng, apply); }
               },
-              function(err) {
-                restoreBtn();
-                if (err.code === 1) input.placeholder = 'Allow location in browser settings';
-                else if (err.code === 3) input.placeholder = 'Location timeout – try again';
-                else input.placeholder = 'Location unavailable (use HTTPS or allow location)';
-              },
+              function() { restoreBtn(); },
               { timeout: 15000, maximumAge: 60000, enableHighAccuracy: true }
             );
           });
         }
-      }
+      };
       var s = document.createElement('script');
-      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&libraries=places&callback=initAutocomplete';
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&loading=async&libraries=places&callback=initPlaceAutocomplete';
       s.async = true;
       s.defer = true;
-      window.initAutocomplete = initAutocomplete;
       document.head.appendChild(s);
     })();
   </script>

@@ -11,7 +11,7 @@ import { GoogleMapsService } from './core/google-maps.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('addressInput') addressInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('placeAutocompleteContainer') placeAutocompleteContainerRef!: ElementRef<HTMLElement>;
   phone = environment.phone;
   locationLoading = false;
   form = new FormGroup({
@@ -29,7 +29,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.setupReveal();
     if (this.googleMaps.isAvailable) {
-      this.googleMaps.loadScript().then(() => this.initAutocomplete()).catch(() => {});
+      this.googleMaps.loadScript().then(() => this.initPlaceAutocomplete()).catch(() => {});
     }
   }
 
@@ -48,10 +48,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     els.forEach((el) => this.observer!.observe(el));
   }
 
-  private initAutocomplete(): void {
-    const input = this.addressInputRef?.nativeElement;
-    if (!input) return;
-    this.removeAutocomplete = this.googleMaps.initAutocomplete(input, (addr) => {
+  private async initPlaceAutocomplete(): Promise<void> {
+    const container = this.placeAutocompleteContainerRef?.nativeElement;
+    if (!container) return;
+    this.removeAutocomplete = await this.googleMaps.createPlaceAutocompleteElement(container, (addr) => {
       this.form.patchValue({ address: addr });
     });
   }

@@ -169,13 +169,19 @@
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.15);
   background: var(--bg);
-  input {
+}
+.place-autocomplete-container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gmp-place-autocomplete, input {
     flex: 1;
     min-width: 0;
-    border: none;
     background: transparent;
-    padding-right: 3rem;
-    &:focus { outline: none; }
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
   }
   .btn-location {
     position: absolute;

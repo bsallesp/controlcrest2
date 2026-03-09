@@ -59,7 +59,7 @@
       <input type="tel" formControlName="phone" placeholder="Phone" required>
       <textarea formControlName="message" placeholder="TV size, wall type, or question (optional)"></textarea>
       <div class="address-input-wrap">
-        <input type="text" #addressInput formControlName="address" placeholder="Address (street, city, ZIP)" autocomplete="nope" required>
+        <div #placeAutocompleteContainer class="place-autocomplete-container"></div>
         <button type="button" class="btn btn-secondary btn-location" (click)="useLocation()" [disabled]="locationLoading" aria-label="Use my location" title="Use my location">
           @if (locationLoading) {
             <span style="opacity:0.7">…</span>
