@@ -180,6 +180,10 @@
     .contact-form textarea::placeholder { color: var(--text-muted); }
     .contact-form textarea { min-height: 100px; resize: vertical; }
     .contact-form button { align-self: center; min-width: 160px; }
+    .address-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .address-row input[type="text"] { flex: 1; min-width: 0; }
+    .btn-location { padding: 0.5rem; min-width: 3rem; min-height: 3rem; width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; box-sizing: border-box; }
+    .btn-location svg { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
 
     /* Google Places autocomplete dropdown */
     .pac-container { z-index: 9999 !important; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: var(--surface) !important; margin-top: 4px; }
@@ -315,11 +319,15 @@
         <a href="tel:YOUR_PHONE" class="contact-option">📞 YOUR_PHONE</a>
         <a href="sms:YOUR_PHONE" class="contact-option">💬 Text us</a>
       </div>
-      <form class="contact-form" action="#" method="post">
+      <form class="contact-form" action="#" method="post" autocomplete="off">
         <input type="text" name="name" placeholder="Name" required>
         <input type="tel" name="phone" placeholder="Phone" required>
-        <input type="text" name="address" id="address" placeholder="Address (street, city, ZIP)" required autocomplete="off">
         <textarea name="message" placeholder="TV size, wall type, or question (optional)"></textarea>
+        <div class="address-row">
+          <input type="text" id="address" placeholder="Address (street, city, ZIP)" autocomplete="nope" required>
+          <button type="button" class="btn btn-secondary btn-location" id="use-location" aria-label="Use my location" title="Use my location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <input type="hidden" name="address" id="address-value">
         <button type="submit" class="btn btn-primary">Request Quote</button>
       </form>
     </div>
@@ -347,21 +355,73 @@
     (function() {
       var apiKey = 'YOUR_GOOGLE_PLACES_API_KEY';
       if (!apiKey || apiKey === 'YOUR_GOOGLE_PLACES_API_KEY') {
-        console.warn('[Address autocomplete] Nao funciona: chave GCP ausente. Em temp/.env defina GOOGLE_API_KEY=sua_chave e rode: python LandingPage/serve.py');
+        console.warn('[Address autocomplete] Nao funciona: chave GCP ausente.');
         return;
       }
       function initAutocomplete() {
         var input = document.getElementById('address');
         if (!input) return;
+        var southFloridaBounds = new google.maps.LatLngBounds(
+          new google.maps.LatLng(24.5, -82.0),
+          new google.maps.LatLng(27.0, -80.0)
+        );
         var autocomplete = new google.maps.places.Autocomplete(input, {
           types: ['address'],
-          componentRestrictions: { country: 'us' },
+          bounds: southFloridaBounds,
+          strictBounds: true,
           fields: ['formatted_address', 'address_components']
         });
+        var hidden = document.getElementById('address-value');
+        function syncAddress() {
+          if (hidden) hidden.value = input.value;
+        }
+        input.addEventListener('input', syncAddress);
+        input.addEventListener('change', syncAddress);
         autocomplete.addListener('place_changed', function() {
           var place = autocomplete.getPlace();
-          if (place.formatted_address) input.value = place.formatted_address;
+          if (place.formatted_address) {
+            input.value = place.formatted_address;
+            if (hidden) hidden.value = place.formatted_address;
+          }
         });
+        var btnLocation = document.getElementById('use-location');
+        if (btnLocation) {
+          var iconHtml = btnLocation.innerHTML;
+          btnLocation.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!navigator.geolocation) {
+              input.placeholder = 'Geolocation not supported';
+              return;
+            }
+            btnLocation.disabled = true;
+            btnLocation.innerHTML = '<span style="opacity:0.7">…</span>';
+            navigator.geolocation.getCurrentPosition(
+              function(pos) {
+                var lat = pos.coords.latitude;
+                var lng = pos.coords.longitude;
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: { lat: lat, lng: lng } }, function(results, status) {
+                  btnLocation.disabled = false;
+                  btnLocation.innerHTML = iconHtml;
+                  if (status === 'OK' && results && results[0]) {
+                    input.value = results[0].formatted_address;
+                    if (hidden) hidden.value = results[0].formatted_address;
+                  } else {
+                    input.placeholder = 'Could not get address';
+                  }
+                });
+              },
+              function(err) {
+                btnLocation.disabled = false;
+                btnLocation.innerHTML = iconHtml;
+                if (err.code === 1) input.placeholder = 'Allow location in browser settings';
+                else if (err.code === 3) input.placeholder = 'Location timeout – try again';
+                else input.placeholder = 'Location unavailable (use HTTPS or allow location)';
+              },
+              { timeout: 15000, maximumAge: 60000, enableHighAccuracy: true }
+            );
+          });
+        }
       }
       var s = document.createElement('script');
       s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey) + '&libraries=places&callback=initAutocomplete';
