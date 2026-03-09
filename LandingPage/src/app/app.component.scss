@@ -10,6 +10,29 @@
     gap: 1.75rem;
   }
 
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+
+    img {
+      display: block;
+    }
+
+    .brand-mark {
+      width: 82px;
+      max-width: 26vw;
+    }
+
+    .brand-text {
+      height: 26px;
+      width: auto;
+      opacity: 0.9;
+    }
+  }
+
   h1 {
     font-size: clamp(1.9rem, 5vw, 2.6rem);
     font-weight: 700;
@@ -236,6 +259,80 @@
   textarea {
     min-height: 110px;
     resize: vertical;
+  }
+
+  .phone-field {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(15, 23, 42, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    padding-right: 0.6rem;
+
+    .phone-prefix {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding-left: 0.85rem;
+
+      .phone-country {
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .phone-code {
+        font-size: 0.9rem;
+        color: var(--text);
+        font-weight: 500;
+      }
+    }
+
+    input[type='tel'] {
+      border: none;
+      background: transparent;
+      padding-left: 0.5rem;
+      padding-right: 0;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+
+  .contact-preference-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+
+    .contact-preference-label {
+      color: var(--text-muted);
+    }
+
+    .contact-preference-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+
+      label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: rgba(15, 23, 42, 0.9);
+        cursor: pointer;
+        font-size: 0.88rem;
+      }
+
+      input[type='radio'] {
+        accent-color: var(--accent);
+      }
+    }
   }
 
   button[type='submit'] {

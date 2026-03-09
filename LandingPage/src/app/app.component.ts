@@ -19,6 +19,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   form = new FormGroup({
     name: new FormControl('', Validators.required),
     phone: new FormControl('', Validators.required),
+    contactPreference: new FormControl('', Validators.required),
     message: new FormControl(''),
     address: new FormControl('', Validators.required)
   });
@@ -114,11 +115,28 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     );
   }
 
+  formatUsPhone(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digits = input.value.replace(/\D/g, '').slice(0, 10);
+
+    let formatted = digits;
+    if (digits.length > 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length > 3) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    } else if (digits.length > 0) {
+      formatted = `(${digits}`;
+    }
+
+    this.form.patchValue({ phone: formatted }, { emitEvent: false });
+  }
+
   onSubmit(): void {
     if (this.form.valid) {
       this.logger.info('Form submitted', {
         name: this.form.value.name,
         phone: this.form.value.phone,
+        contactPreference: this.form.value.contactPreference,
         hasMessage: !!this.form.value.message,
         address: this.form.value.address
       });
