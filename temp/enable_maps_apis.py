@@ -31,9 +31,12 @@ def load_env():
     return env or dict(os.environ)
 
 # Serviços necessários para o autocomplete (nomes no Service Usage API)
+# PlaceAutocompleteElement (gmp-place-autocomplete) usa Places API (New) = places.googleapis.com
 SERVICES = [
     "maps-backend.googleapis.com",   # Maps JavaScript API
-    "places-backend.googleapis.com", # Places API
+    "places-backend.googleapis.com",  # Places API (legacy)
+    "places.googleapis.com",         # Places API (New)
+    "geocoding-backend.googleapis.com",  # Geocoding API — botão "Use my location" (reverse geocode)
 ]
 
 def enable_via_gcloud(project_id: str) -> bool:
@@ -109,6 +112,8 @@ def main():
     base_flow = "https://console.cloud.google.com/flows/enableapi?apiid"
     webbrowser.open(f"{base_flow}=maps-backend.googleapis.com&project={project_id}")
     webbrowser.open(f"{base_flow}=places-backend.googleapis.com&project={project_id}")
+    webbrowser.open(f"{base_flow}=places.googleapis.com&project={project_id}")
+    webbrowser.open(f"{base_flow}=geocoding-backend.googleapis.com&project={project_id}")  # botão Use my location
     webbrowser.open(f"https://console.cloud.google.com/billing/linkedaccount?project={project_id}")
 
 if __name__ == "__main__":

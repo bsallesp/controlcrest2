@@ -13,7 +13,7 @@ Substitua os valores abaixo pelos seus dados reais. Depois use **Find & Replace*
 
 Defina **GOOGLE_API_KEY** e **PHONE** em `temp/.env`. O build (rodado pelo `serve.py`) injeta no `dist/index.html`. Deploy = pasta `LandingPage/dist/`.
 
-**Autocomplete não funciona (ApiNotActivatedMapError)?** Maps/Places exigem (1) **cobrança ativa** no projeto e (2) APIs ativadas. Rode `python temp/enable_maps_apis.py`: abre a página para vincular cobrança e a página para ativar as APIs. Se não tiver conta de cobrança, crie em Console → Faturamento; depois vincule o projeto e ative Maps JavaScript API e Places API.
+**Autocomplete não funciona (403 / Places API (New) has not been used or is disabled)?** O campo de endereço usa **Places API (New)** (`places.googleapis.com`). É preciso: (1) **cobrança ativa** no projeto e (2) **Places API (New)** ativada. Rode `python temp/enable_maps_apis.py` (define `GOOGLE_CLOUD_PROJECT` no `temp/.env` com o ID do projeto, ex.: `176969306426`) — o script ativa Maps, Places (legacy) e **Places API (New)**. Ou ative manualmente: [Places API (New)](https://console.developers.google.com/apis/api/places.googleapis.com/overview) → selecione o projeto → Ativar. Após ativar, espere alguns minutos antes de testar de novo.
 
 
 

@@ -1,79 +1,31 @@
-# Landing Page — TV Mounting Boca Raton
+# TV Mounting Boca Raton — Angular
 
-A simple page focused on conversion (call, quote, form).
+Versão Angular da landing page (mesmo conteúdo e fluxo da pasta `LandingPage`).
 
----
+## Desenvolvimento
 
-## 1. Hero
+1. **Configurar chave e telefone**  
+   Edite `src/environments/environment.development.ts` (e `environment.ts` para produção):
+   - `googleApiKey`: sua chave da API do Google (Places + Geocoding)
+   - `phone`: número de contato
 
-| Element | Content |
-|---------|----------|
-| **Title** | TV Mounting in Boca Raton |
-| **Subtitle** | Same-Day Professional Installation |
-| **CTAs** | **Call Now** · **Get Quote** (large, visible buttons) |
+2. **Instalar e rodar**
+   ```bash
+   npm install
+   npm start
+   ```
+   Abra http://localhost:4200
 
----
+## Build de produção
 
-## 2. Services
-
-List clearly:
-
-- TV mounting (wall)
-- Above fireplace mounting
-- Ceiling TV mounting
-- Concealed wiring
-- Soundbar installation
-
-Keep copy short; focus on scannability.
-
----
-
-## 3. Benefits
-
-- Same day availability
-- Clean professional finish
-- No visible wires
-- Fully equipped installer
-
-Can be bullets or icons + short text.
-
----
-
-## 4. Photo gallery
-
-- **Real** photos of work (before/after, mounted TVs, hidden wires).
-- Builds trust and aligns expectations with premium positioning.
-
----
-
-## 5. Quick contact
-
-Offer **3 options**:
-
-1. **Phone** (click-to-call on mobile)
-2. **SMS** (link or highlighted number)
-3. **Simple form** (name, phone, message or service type)
-
-Keep the form minimal to avoid drop-off.
-
----
-
-## Suggested visual structure
-
+```bash
+npm run build
 ```
-[Hero: title + subtitle + Call Now | Get Quote]
-[Services: list or grid]
-[Benefits: 4 items]
-[Gallery: real photos]
-[Contact: phone + SMS + form]
-[Footer: optional — phone, service area]
-```
+Saída em `dist/landing-page-ng/`.
 
----
+## Estrutura
 
-## Best practices
-
-- Mobile-first (most local traffic is mobile).
-- Fast load (Core Web Vitals).
-- One goal per page: **lead** (call or quote).
-- Avoid distractions; no heavy links or pop-ups.
+- **AppComponent**: hero, serviços, benefícios, galeria, formulário de contato
+- **GoogleMapsService**: carrega o script do Google Maps, autocomplete de endereço e reverse geocode (com fallback Nominatim)
+- **LoggerService**: log detalhado com níveis (debug, info, warn, error), contexto, timestamp e dados; em produção só `warn`/`error`. Buffer das últimas 200 entradas em `window.__appLogs` (DevTools).
+- **Estilos**: variáveis CSS e layout equivalentes à landing em HTML estático
