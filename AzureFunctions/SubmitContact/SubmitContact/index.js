@@ -1,6 +1,7 @@
 'use strict';
 
 const { EmailClient } = require('@azure/communication-email');
+const https = require('https');
 
 function corsHeaders(req) {
   const origin = req.headers.origin || req.headers.Origin || '';
@@ -95,16 +96,13 @@ module.exports = async function (context, req) {
     const client = new EmailClient(connectionString);
     const poller = await client.beginSend({
       senderAddress: mailFrom,
-      content: {
-        subject,
-        plainText,
-        html
-      },
-      recipients: {
-        to: [{ address: mailTo }]
-      }
+      content: { subject, plainText, html },
+      recipients: { to: [{ address: mailTo }] }
     });
-    await poller.pollUntilDone();
+    await Promise.all([
+      poller.pollUntilDone(),
+      sendSlack(name, phone, address, message)
+    ]);
     context.res = {
       status: 200,
       headers: { ...headers, 'Content-Type': 'application/json' },
@@ -119,6 +117,47 @@ module.exports = async function (context, req) {
     };
   }
 };
+
+function sendSlack(name, phone, address, message) {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) return Promise.resolve();
+
+  const blocks = [
+    { type: 'header', text: { type: 'plain_text', text: '📋 New lead — Control Crest', emoji: true } },
+    {
+      type: 'section',
+      fields: [
+        { type: 'mrkdwn', text: `*Name*\n${name}` },
+        { type: 'mrkdwn', text: `*Phone*\n${phone}` }
+      ]
+    },
+    { type: 'section', text: { type: 'mrkdwn', text: `*Address*\n${address}` } }
+  ];
+  if (message) {
+    blocks.push({ type: 'section', text: { type: 'mrkdwn', text: `*Message*\n${message}` } });
+  }
+
+  const payload = JSON.stringify({ text: `New lead from ${name} — ${phone}`, blocks });
+  const url = new URL(webhookUrl);
+  const bodyBytes = Buffer.from(payload, 'utf8');
+  return new Promise((resolve) => {
+    const req = https.request(
+      {
+        hostname: url.hostname,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': bodyBytes.length
+        }
+      },
+      (res) => { res.resume(); resolve(); }
+    );
+    req.on('error', () => resolve());
+    req.write(bodyBytes);
+    req.end();
+  });
+}
 
 function escapeHtml(s) {
   return s

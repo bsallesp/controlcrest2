@@ -1,0 +1,13 @@
+{
+  "name": "telnyx-sms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HTTP trigger for sending SMS through Telnyx",
+  "main": "SendSms/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
