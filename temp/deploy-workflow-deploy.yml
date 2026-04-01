@@ -1,0 +1,137 @@
+# Build, push to Google Artifact Registry, and optionally deploy to a VM with Docker Compose.
+#
+# Configure ONE of:
+#   A) Repository Variables: GCP_WORKLOAD_IDENTITY_PROVIDER + GCP_SERVICE_ACCOUNT_EMAIL (WIF, recommended)
+#   B) Repository secret: GCP_SA_KEY (service account JSON key)
+#
+# Optional deploy: vars.DEPLOY_ENABLED = true + secrets DEPLOY_HOST, DEPLOY_SSH_KEY, etc.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  NODE_VERSION: "20"
+  GAR_REGION: "us-central1"
+  GAR_REPO: "controlcrest"
+
+jobs:
+  build-and-push:
+    name: Build & push images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image-digest-api: ${{ steps.meta-api.outputs.digest }}
+      image-digest-client: ${{ steps.meta-client.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        id: auth_wif
+        if: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GCP_SERVICE_ACCOUNT_EMAIL != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Require GCP_SA_KEY when not using full WIF
+        if: ${{ !(vars.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GCP_SERVICE_ACCOUNT_EMAIL != '') }}
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          if [ -z "${GCP_SA_KEY}" ]; then
+            echo "::error::Add repository secret GCP_SA_KEY (service account JSON) or set Variables GCP_WORKLOAD_IDENTITY_PROVIDER + GCP_SERVICE_ACCOUNT_EMAIL."
+            echo "Example: gh secret set GCP_SA_KEY -R bsallesp/ControlCrest < key.json"
+            exit 1
+          fi
+
+      - name: Authenticate to Google Cloud (service account key)
+        id: auth_json
+        if: ${{ !(vars.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && vars.GCP_SERVICE_ACCOUNT_EMAIL != '') }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.GAR_REGION }}-docker.pkg.dev --quiet
+
+      - name: Set image tags
+        id: tags
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "api=${{ env.GAR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}/${{ env.GAR_REPO }}/api:${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "api_latest=${{ env.GAR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}/${{ env.GAR_REPO }}/api:latest" >> $GITHUB_OUTPUT
+          echo "client=${{ env.GAR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}/${{ env.GAR_REPO }}/client:${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "client_latest=${{ env.GAR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}/${{ env.GAR_REPO }}/client:latest" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push API image
+        id: build-api
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src
+          file: ./src/ControlCrest.Api/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.api }}
+            ${{ steps.tags.outputs.api_latest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push client image
+        id: build-client
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.client }}
+            ${{ steps.tags.outputs.client_latest }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to VM (Compose)
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.DEPLOY_ENABLED == 'true'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image URLs
+        id: urls
+        run: |
+          GAR="${{ env.GAR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'tv-installation-488002' }}/${{ env.GAR_REPO }}"
+          echo "GAR_IMAGE_API=${GAR}/api:latest" >> $GITHUB_ENV
+          echo "GAR_IMAGE_CLIENT=${GAR}/client:latest" >> $GITHUB_ENV
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER || 'root' }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          script: |
+            set -e
+            export GAR_IMAGE_API='${{ env.GAR_IMAGE_API }}'
+            export GAR_IMAGE_CLIENT='${{ env.GAR_IMAGE_CLIENT }}'
+            cd ${{ secrets.DEPLOY_PATH || '/opt/controlcrest' }}
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+            docker image prune -f

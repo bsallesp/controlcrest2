@@ -10,6 +10,10 @@ LandingPage/env.js
 # Azure Function deploy artifacts
 AzureFunctions/SubmitContact/node_modules/
 AzureFunctions/SubmitContact/local.settings.json
+
+# GCP Cloud Functions (local)
+GcpCloudFunctions/submit-contact/node_modules/
+GcpCloudFunctions/submit-contact/.env
 temp/deploy-func-cc.zip
 temp/func.zip
 

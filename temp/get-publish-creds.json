@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [],
+  "outputs": {
+    "publishingUserName": {
+      "type": "string",
+      "value": "[list(resourceId('Microsoft.Web/sites/config', 'func-cc-controlcrest', 'publishingcredentials'), '2022-09-01').properties.publishingUserName]"
+    },
+    "publishingPassword": {
+      "type": "string",
+      "value": "[list(resourceId('Microsoft.Web/sites/config', 'func-cc-controlcrest', 'publishingcredentials'), '2022-09-01').properties.publishingPassword]"
+    }
+  }
+}

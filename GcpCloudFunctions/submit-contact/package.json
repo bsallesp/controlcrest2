@@ -1,0 +1,16 @@
+{
+  "name": "submit-contact-gcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloud Functions Gen2 — lead form: Gmail API (Workspace) + fallback Google Chat webhook",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.2",
+    "express": "^4.21.2",
+    "google-auth-library": "^9.14.2",
+    "googleapis": "^144.0.0"
+  }
+}

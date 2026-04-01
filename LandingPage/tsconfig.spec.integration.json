@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./out-tsc/spec-integration",
-    "types": ["jasmine", "google.maps"]
-  },
-  "include": ["src/integration/**/*.spec.ts", "src/**/*.d.ts"]
-}
