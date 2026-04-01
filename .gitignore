@@ -11,6 +11,7 @@ LandingPage/env.js
 AzureFunctions/SubmitContact/node_modules/
 AzureFunctions/SubmitContact/local.settings.json
 temp/deploy-func-cc.zip
+temp/func.zip
 
 # Python
 __pycache__/

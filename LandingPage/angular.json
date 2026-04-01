@@ -131,7 +131,21 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "exclude": ["src/integration/**/*.spec.ts"]
+          },
+          "configurations": {
+            "integration": {
+              "tsConfig": "tsconfig.spec.integration.json",
+              "include": ["src/integration/**/*.spec.ts"],
+              "exclude": [],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
+            }
           }
         }
       }

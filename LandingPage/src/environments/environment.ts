@@ -5,5 +5,5 @@ export const environment = {
   /** Canonical site origin (no trailing slash). Used for SEO, OG URLs, sitemap. */
   siteUrl: 'https://controlcrest.com',
   /** After deploy: https://<function-app>.azurewebsites.net/api/submit-contact */
-  contactApiUrl: 'https://PLACEHOLDER.azurewebsites.net/api/submit-contact'
+  contactApiUrl: 'https://func-cc-5c7775b3cf.azurewebsites.net/api/submit-contact'
 };
