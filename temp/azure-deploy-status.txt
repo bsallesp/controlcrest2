@@ -1,0 +1,23 @@
+Control Crest — Azure deploy (2026-04-01)
+
+Created in rg-control-crest-prod:
+- Storage (static website): stcce78f20af4fb
+  Web URL: https://stcce78f20af4fb.z20.web.core.windows.net/
+- Function App (Node): func-cc-5c7775b3cf
+  API (after code + settings): https://func-cc-5c7775b3cf.azurewebsites.net/api/submit-contact
+
+CLI from this machine hit intermittent WinError 10054 / RBAC when setting Function app settings and zip deploy.
+Finish locally when the network is stable:
+
+  .\Scripts\complete-controlcrest-deploy.ps1
+
+Portal fallback:
+1) Function App → Configuration → Application settings:
+   - ACS_CONNECTION_STRING = primary connection string from Communication resource thelaser-comm (thelaserspace-prod)
+   - MAIL_FROM_ADDRESS = DoNotReply@49056c6a-2022-4812-8cdd-a9617428d269.azurecomm.net
+   - MAIL_TO_ADDRESS = bsallesp@gmail.com
+   - ALLOWED_ORIGIN = https://stcce78f20af4fb.z20.web.core.windows.net (no trailing slash)
+2) Deployment Center → Zip deploy temp/deploy-func-cc.zip (or run complete-controlcrest-deploy.ps1)
+3) Storage → Containers → $web → upload dist/landing-page-ng/browser contents (or use upload-batch in script)
+
+Security: if ACS keys were exposed in a log, rotate: az communication regenerate-key -n thelaser-comm -g thelaserspace-prod --key-type Primary

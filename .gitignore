@@ -7,6 +7,11 @@ temp/.env
 LandingPage/dist/
 LandingPage/env.js
 
+# Azure Function deploy artifacts
+AzureFunctions/SubmitContact/node_modules/
+AzureFunctions/SubmitContact/local.settings.json
+temp/deploy-func-cc.zip
+
 # Python
 __pycache__/
 *.py[cod]

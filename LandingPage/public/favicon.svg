@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" role="img" aria-label="Control Crest">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141b26"/>
+      <stop offset="100%" stop-color="#040508"/>
+    </linearGradient>
+  </defs>
+  <rect width="56" height="56" rx="14" fill="url(#bg)"/>
+  <g transform="translate(4 0)" fill="none" stroke="#e8b84a" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 3 43 14v17.5C43 41.5 33.8 49.2 24 51.5 14.2 49.2 5 41.5 5 31.5V14L24 3Z"/>
+    <path d="M24 17v21"/>
+    <path d="m15.5 28.5 8.5-6 8.5 6"/>
+  </g>
+</svg>

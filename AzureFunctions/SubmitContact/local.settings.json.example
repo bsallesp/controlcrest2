@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "ACS_CONNECTION_STRING": "endpoint=https://thelaser-comm.unitedstates.communication.azure.com/;accesskey=PASTE_PRIMARY_KEY_PORTAL",
+    "MAIL_FROM_ADDRESS": "DoNotReply@49056c6a-2022-4812-8cdd-a9617428d269.azurecomm.net",
+    "MAIL_TO_ADDRESS": "your-inbox@example.com",
+    "ALLOWED_ORIGIN": "http://localhost:4200,http://127.0.0.1:4200"
+  }
+}

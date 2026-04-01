@@ -1,5 +1,7 @@
 # Configuração — preencha uma vez e use Find & Replace
 
+Este arquivo centraliza placeholders para **tráfego pago** (`PaidTraffic/`), **Google Business** (`GoogleBusiness/`) e **landing** (`LandingPage/` + `temp/.env`). O mapa do repositório está no [`README.md`](./README.md) na raiz.
+
 Substitua os valores abaixo pelos seus dados reais. Depois use **Find & Replace** no projeto (ou em cada arquivo indicado) para trocar o placeholder pelo valor.
 
 | Placeholder | Seu valor | Onde substituir |

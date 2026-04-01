@@ -52,4 +52,5 @@ Before launching, ensure GBP and landing page are live. Then create a **Search**
 
 - [ ] Check search terms report weekly; add irrelevant terms as negatives.
 - [ ] When CPA and close rate are stable, consider scaling budget to $80–$150/day.
-- [ ] Use the call script in `../PaidTraffic/README.md` (qualification questions) when leads call.
+- [ ] Use the call script in [`README.md`](./README.md) (qualification questions) when leads call.
+- [ ] Manter cadência descrita em **Manutenção contínua** no mesmo [`README.md`](./README.md) (semanal/mensal/trimestral).

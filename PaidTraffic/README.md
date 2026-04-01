@@ -1,6 +1,19 @@
 # Paid Traffic — Google Ads | TV Mounting Boca Raton
 
-Campaign strategy to generate qualified leads via search.
+Estratégia para **criar e manter** campanhas de busca que geram leads qualificados. O **Google Business Profile** (mapa, reviews, posts) está em [`../GoogleBusiness/README.md`](../GoogleBusiness/README.md); mantenha **landing, telefone e mensagem** alinhados ao GBP.
+
+---
+
+## Manutenção contínua (após o lançamento)
+
+| Frequência | Ação |
+|------------|------|
+| Semanal | Relatório de **termos de pesquisa**; adicionar negativas; checar impressões e CPC por grupo |
+| Semanal | Conferir orçamento e horários; ajustar lances por cidade se usar ajustes de localização |
+| Mensal | Revisar taxa de conversão e CPA; testar novas headlines/descrições em RSAs |
+| Trimestral | Revisar palavras-chave e oferta; escalar orçamento se CPA e fechamento estiverem estáveis |
+
+Checklist de setup e extensões: [`campaign-checklist.md`](./campaign-checklist.md).
 
 ---
 
@@ -19,7 +32,7 @@ Users are already **searching** (e.g. "tv mounting near me"). That lead is close
 | **Location** | 50-mile radius, center **33433** |
 | **Hours** | 8:00 AM — 8:00 PM |
 
-Prioritize (when possible) the cities listed in [ACTION_PLAN.md](../ACTION_PLAN.md).
+Prioritize (when possible) the cities listed in [ACTION_PLAN.md](../temp/ACTION_PLAN.md).
 
 ---
 

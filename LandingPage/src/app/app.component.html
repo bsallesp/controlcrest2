@@ -1,120 +1,404 @@
-<header class="hero">
-  <div class="container">
-    <div class="brand">
-      <img
-        src="assets/logo/control-crest-mark.png.png"
-        alt="Control Crest logo"
-        class="brand-mark"
-      />
-      <img
-        src="assets/logo/control-crest-text.png.png"
-        alt="Control Crest"
-        class="brand-text"
-      />
-    </div>
-    <h1>TV Mounting in Boca Raton</h1>
-    <p class="subtitle">Same-Day Professional Installation</p>
-    <div class="cta-group">
-      <a [href]="'tel:' + phone" class="btn btn-primary btn-tel">📞 Call Now</a>
-      <a href="#contact" class="btn btn-secondary">Get Quote</a>
-    </div>
-  </div>
-</header>
-
-<section id="services">
-  <div class="container reveal">
-    <h2>Services</h2>
-    <div class="services-grid">
-      <div class="service-card"><strong>TV wall mounting</strong> Secure, level install</div>
-      <div class="service-card"><strong>Above fireplace</strong> Heat-safe solutions</div>
-      <div class="service-card"><strong>Ceiling TV mount</strong> Flush or tilt</div>
-      <div class="service-card"><strong>Concealed wiring</strong> Clean, hidden cables</div>
-      <div class="service-card"><strong>Soundbar install</strong> Sync with your TV</div>
-    </div>
-  </div>
-</section>
-
-<section id="benefits">
-  <div class="container reveal">
-    <h2>Why Choose Us</h2>
-    <ul class="benefits-list">
-      <li>Same-day availability when you need it</li>
-      <li>Clean, professional finish every time</li>
-      <li>No visible wires — concealed routing</li>
-      <li>Fully equipped installer — no extra runs</li>
-    </ul>
-  </div>
-</section>
-
-<section id="gallery">
-  <div class="container reveal">
-    <h2>Recent Work</h2>
-    <div class="gallery">
-      <div class="gallery-item">Add your photo 1</div>
-      <div class="gallery-item">Add your photo 2</div>
-      <div class="gallery-item">Add your photo 3</div>
-      <div class="gallery-item">Add your photo 4</div>
-    </div>
-    <p class="gallery-note">Replace placeholders with real job photos (before/after, mounted TVs, hidden wires).</p>
-  </div>
-</section>
-
-<section id="contact">
-  <div class="container reveal">
-    <h2>Get in Touch</h2>
-    <div class="contact-options">
-      <a [href]="'tel:' + phone" class="contact-option">📞 {{ phone }}</a>
-      <a [href]="'sms:' + phone" class="contact-option">💬 Text us</a>
-    </div>
-    <form class="contact-form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
-      <input type="text" formControlName="name" placeholder="Name" required>
-      <div class="phone-field">
-        <div class="phone-prefix">
-          <span class="phone-country">US</span>
-          <span class="phone-code">+1</span>
-        </div>
-        <input
-          type="tel"
-          formControlName="phone"
-          placeholder="(555) 123-4567"
-          required
-          (input)="formatUsPhone($event)"
-        />
+<main>
+  <header class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">South Florida · Same-day installs</p>
+      <div class="brand-lockup">
+        <svg
+          class="brand-mark-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 48 56"
+          fill="none"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M24 3 43 14v17.5C43 41.5 33.8 49.2 24 51.5 14.2 49.2 5 41.5 5 31.5V14L24 3Z"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M24 17v21"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linecap="round"
+          />
+          <path
+            d="m15.5 28.5 8.5-6 8.5 6"
+            stroke="currentColor"
+            stroke-width="2.25"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <p class="brand-wordmark">
+          <span class="brand-wordmark__control">Control</span>
+          <span class="brand-wordmark__crest">Crest</span>
+        </p>
       </div>
-      <div class="contact-preference-group">
-        <p class="contact-preference-label">How should we contact you?</p>
-        <div class="contact-preference-options">
-          <label>
-            <input type="radio" formControlName="contactPreference" value="call" />
-            Call
-          </label>
-          <label>
-            <input type="radio" formControlName="contactPreference" value="text" />
-            Text
-          </label>
+      <h1>TV mounting done right — <span class="hero-highlight">first time</span>, every time</h1>
+      <p class="subtitle">Professional wall &amp; ceiling installs in Broward &amp; Palm Beach counties</p>
+      <div class="cta-group">
+        <a [href]="'tel:' + phone" class="btn btn-primary btn-tel">
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+          Call now
+        </a>
+        <a href="#pricing" class="btn btn-secondary">See pricing</a>
+      </div>
+      <ul class="hero-trust" aria-label="Trust highlights">
+        <li>Local owner-operator</li>
+        <li>Clean cable routing</li>
+        <li>Fully equipped for your wall type</li>
+      </ul>
+    </div>
+  </header>
+
+  <section id="about" class="section-about" aria-labelledby="about-heading">
+    <div class="container reveal">
+      <div class="about-grid">
+        <figure class="about-photo">
+          <div class="about-photo-frame">
+            <img
+              src="/images/bruno-family.jpeg"
+              alt="Bruno and his family — Control Crest, Broward &amp; Palm Beach"
+              width="640"
+              height="640"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="about-photo-caption">Family-owned · Broward &amp; Palm Beach</figcaption>
+        </figure>
+        <div class="about-copy">
+          <span class="section-eyebrow section-eyebrow--left">Meet your installer</span>
+          <h2 id="about-heading">The person behind your mount</h2>
+          <blockquote class="about-quote">
+            <p>
+              Hi — I'm Bruno. I've been in South Florida since 2019, and for years I've been mounting TVs on walls and ceilings across Broward and Palm Beach counties. I'd be thrilled to take care of yours.
+            </p>
+          </blockquote>
+          <ul class="about-badges" aria-label="Credentials">
+            <li>Broward &amp; Palm Beach</li>
+            <li>Walls &amp; ceilings</li>
+            <li>Direct communication — no call center</li>
+          </ul>
         </div>
       </div>
-      <textarea formControlName="message" placeholder="TV size, wall type, or question (optional)"></textarea>
-      <div class="address-input-wrap">
-        <div #placeAutocompleteContainer class="place-autocomplete-container"></div>
-      </div>
-      <button
-        type="button"
-        class="use-location-link"
-        (click)="useLocation()"
-        [disabled]="locationLoading"
-        aria-label="Use my location"
-      >
-        Use my location
-      </button>
-      <button type="submit" class="btn btn-primary">Request Quote</button>
-    </form>
-  </div>
-</section>
+    </div>
+  </section>
 
-<footer>
-  <div class="container">
-    <p>Serving Boca Raton, Delray Beach, Parkland, Weston &amp; surrounding areas.</p>
-    <p><a [href]="'tel:' + phone">{{ phone }}</a></p>
-  </div>
-</footer>
+  <section id="services">
+    <div class="container reveal">
+      <header class="section-header">
+        <span class="section-eyebrow">Services</span>
+        <h2>Everything your install needs</h2>
+        <p class="section-sub">From standard mounts to tricky layouts — we bring the right hardware and patience for a spot-on result.</p>
+      </header>
+      <div class="services-grid">
+        <article class="service-card">
+          <span class="service-card__num" aria-hidden="true">01</span>
+          <strong>TV wall mounting</strong>
+          <span class="service-card__desc">Secure, level install on drywall, concrete, or wood</span>
+        </article>
+        <article class="service-card">
+          <span class="service-card__num" aria-hidden="true">02</span>
+          <strong>Above fireplace</strong>
+          <span class="service-card__desc">Heat-aware placement and safe viewing height</span>
+        </article>
+        <article class="service-card">
+          <span class="service-card__num" aria-hidden="true">03</span>
+          <strong>Ceiling TV mount</strong>
+          <span class="service-card__desc">Flush, tilt, or drop-down — you choose</span>
+        </article>
+        <article class="service-card">
+          <span class="service-card__num" aria-hidden="true">04</span>
+          <strong>Concealed wiring</strong>
+          <span class="service-card__desc">In-wall or raceway — clean lines, no clutter</span>
+        </article>
+        <article class="service-card">
+          <span class="service-card__num" aria-hidden="true">05</span>
+          <strong>Soundbar install</strong>
+          <span class="service-card__desc">Synced with your TV and remote setup</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="benefits">
+    <div class="container reveal">
+      <header class="section-header">
+        <span class="section-eyebrow">Why us</span>
+        <h2>Built for homeowners who notice the details</h2>
+        <p class="section-sub">You get a finished room — not a weekend of patching holes.</p>
+      </header>
+      <ul class="benefits-list">
+        <li>Same-day availability when schedule allows</li>
+        <li>Level, centered, and cable-managed every time</li>
+        <li>No mystery fees — we quote before we drill</li>
+        <li>Tools and mounts on the truck — fewer delays</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="pricing" class="section-pricing" aria-labelledby="pricing-heading">
+    <div class="container reveal">
+      <header class="section-header">
+        <span class="section-eyebrow">Pricing</span>
+        <h2 id="pricing-heading">Straightforward rates</h2>
+        <p class="section-sub">Every total below includes <strong>labor plus the wall mount (bracket) hardware</strong> we install — not labor-only pricing. Rates vary by TV size, cable option, and bracket style (fixed, tilt, or full motion). Most jobs land in the $300–$600 range; we confirm everything before we drill.</p>
+      </header>
+
+      <h3 class="pricing-block-title">Wall install by TV size</h3>
+      <p class="pricing-block-lead">Standard stud wall (drywall). These two tables use a <strong>fixed (flush) wall bracket</strong> — included in the price. “Visible routing” is neat cable runs on the wall; “Concealed” is in-wall where code allows, or a paintable raceway.</p>
+      <p class="pricing-included">
+        <strong>Always included:</strong> the <strong>wall mount bracket</strong> (rated for your TV’s weight), installation into studs, leveling, and basic device hookup. Tilt and full-motion brackets are included too when you pick those styles — use the mount-style table below to see the add-on over a fixed mount.
+      </p>
+      <div class="pricing-tables-pair">
+        <div class="pricing-table-wrap pricing-table-wrap--sub">
+          <p class="pricing-subtable-heading" id="pricing-visible">Mount — visible routing</p>
+          <figure class="pricing-subtable-figure">
+            <img
+              src="/images/pricing-visible-routing.jpg"
+              alt="Wall-mounted TV with cables routed visibly to the console — basic cable management outside the wall."
+              width="640"
+              height="640"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <table class="pricing-table pricing-table--duo" aria-labelledby="pricing-visible">
+            <caption class="visually-hidden">Starting prices with visible cable routing, by TV size</caption>
+            <thead>
+              <tr>
+                <th scope="col">TV size</th>
+                <th scope="col" class="pricing-th-price">
+                  <span class="pricing-th-stack">
+                    <span class="pricing-th-main">Your price</span>
+                    <span class="pricing-th-sub">fixed mount included</span>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Up to 50&quot;</th>
+                <td class="pricing-price">$299+</td>
+              </tr>
+              <tr>
+                <th scope="row">51&quot; – 65&quot;</th>
+                <td class="pricing-price">$349+</td>
+              </tr>
+              <tr>
+                <th scope="row">66&quot; – 85&quot;</th>
+                <td class="pricing-price">$399+</td>
+              </tr>
+              <tr>
+                <th scope="row">86&quot; and up</th>
+                <td class="pricing-price pricing-price--tbd">
+                  <abbr title="Priced after we confirm TV weight and bracket type">TBD</abbr>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pricing-table-wrap pricing-table-wrap--sub">
+          <p class="pricing-subtable-heading" id="pricing-concealed">Mount + concealed wiring</p>
+          <figure class="pricing-subtable-figure">
+            <img
+              src="/images/pricing-concealed.jpg"
+              alt="Wall-mounted TV with cables concealed in the wall — clean finish with no visible wires."
+              width="640"
+              height="640"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <table class="pricing-table pricing-table--duo" aria-labelledby="pricing-concealed">
+            <caption class="visually-hidden">Starting prices with concealed wiring, by TV size</caption>
+            <thead>
+              <tr>
+                <th scope="col">TV size</th>
+                <th scope="col" class="pricing-th-price">
+                  <span class="pricing-th-stack">
+                    <span class="pricing-th-main">Your price</span>
+                    <span class="pricing-th-sub">fixed mount included</span>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Up to 50&quot;</th>
+                <td class="pricing-price">$449+</td>
+              </tr>
+              <tr>
+                <th scope="row">51&quot; – 65&quot;</th>
+                <td class="pricing-price">$499+</td>
+              </tr>
+              <tr>
+                <th scope="row">66&quot; – 85&quot;</th>
+                <td class="pricing-price">$599+</td>
+              </tr>
+              <tr>
+                <th scope="row">86&quot; and up</th>
+                <td class="pricing-price pricing-price--tbd">
+                  <abbr title="Priced after we confirm TV weight and bracket type">TBD</abbr>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="pricing-base-note">
+        The dollar amounts above are <strong>all-in</strong> for that TV size and cable option with a <strong>fixed (low-profile) bracket</strong>. Want tilt or full motion? Add the amount below to the same size row — the upgraded bracket is still <strong>included</strong> (we supply and install it).
+      </p>
+
+      <h3 class="pricing-block-title">Mount style — bracket included</h3>
+      <p class="pricing-block-lead">Retail mounts range from ~$30 fixed to $100+ for tilt and $150+ for heavy full-motion arms. We carry the right hardware and fold it into your total. These lines show the <strong>surcharge over the fixed-mount tables</strong> above (same TV size &amp; cable option).</p>
+      <div class="pricing-table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">Mount style options; hardware and labor included; add-on vs fixed baseline</caption>
+          <thead>
+            <tr>
+              <th scope="col">Bracket type</th>
+              <th scope="col">Add vs fixed mount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="pricing-name">Fixed (flush / low-profile)</span>
+                <span class="pricing-note">Baseline in the tables above — no tilt, slim to the wall</span>
+              </td>
+              <td class="pricing-price">Included</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="pricing-name">Tilt</span>
+                <span class="pricing-note">Vertical angle for glare, sofa height, or high mounts</span>
+              </td>
+              <td class="pricing-price">+$50+</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="pricing-name">Full motion</span>
+                <span class="pricing-note">Articulating arm — swivel, extend, pivot (weight-rated for your TV)</span>
+              </td>
+              <td class="pricing-price">+$125+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="pricing-mount-footnote">Very large TVs or specialty arms (e.g. extra-long extension) may need a premium bracket — we’ll confirm the exact add-on before you commit. <strong>BYO mount:</strong> we can install yours; price is adjusted so you’re not paying for our bracket.</p>
+
+      <h3 class="pricing-block-title">Special placements &amp; add-ons</h3>
+      <p class="pricing-block-lead">Priced on top of your TV size + cable + mount style (or as a standalone where noted).</p>
+      <div class="pricing-table-wrap">
+        <table class="pricing-table">
+          <caption class="visually-hidden">Special placement and add-on starting prices</caption>
+          <thead>
+            <tr>
+              <th scope="col">Option</th>
+              <th scope="col">Starting at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="pricing-name">Above fireplace / stone or brick</span>
+                <span class="pricing-note">Extra time, anchors, and heat-safe placement</span>
+              </td>
+              <td class="pricing-price">+$75+</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="pricing-name">Ceiling mount</span>
+                <span class="pricing-note">Depends on TV size and ceiling structure — often similar to wall bracket + hardware</span>
+              </td>
+              <td class="pricing-price">$399+</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="pricing-name">Soundbar under TV</span>
+                <span class="pricing-note">Bracket + level install with the TV</span>
+              </td>
+              <td class="pricing-price">$99+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="pricing-disclaimer">
+        <strong>Minimum project:</strong> $299+ for qualifying wall mounts (includes fixed bracket + install). Concrete, metal, or unusual builds may add labor. <a href="#contact">Request a quote</a> with TV size, <strong>mount style</strong> (fixed / tilt / full motion), and whether you want cables concealed — we’ll reply with one clear total.
+      </p>
+    </div>
+  </section>
+
+  <section id="contact" class="section-contact">
+    <div class="container reveal">
+      <header class="section-header">
+        <span class="section-eyebrow">Contact</span>
+        <h2>Get your quote</h2>
+        <p class="section-sub">Tell us your TV size and wall type — we'll follow up fast.</p>
+      </header>
+      <div class="contact-layout">
+        <div class="contact-options">
+          <a [href]="'tel:' + phone" class="contact-option">
+            <svg class="contact-option__icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            {{ phone }}
+          </a>
+          <a [href]="'sms:' + phone" class="contact-option">
+            <svg class="contact-option__icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Text us
+          </a>
+        </div>
+        <form class="contact-form" [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+          <input type="text" formControlName="name" placeholder="Full name" required>
+          <div class="phone-field">
+            <div class="phone-prefix">
+              <span class="phone-country">US</span>
+              <span class="phone-code">+1</span>
+            </div>
+            <input
+              type="tel"
+              formControlName="phone"
+              placeholder="(555) 123-4567"
+              required
+              (input)="formatUsPhone($event)"
+            />
+          </div>
+          <textarea formControlName="message" placeholder="TV size, mount style (fixed / tilt / full motion), wall type, or question (optional)"></textarea>
+          <div class="address-input-wrap">
+            <div #placeAutocompleteContainer class="place-autocomplete-container"></div>
+          </div>
+          <button
+            type="button"
+            class="use-location-link"
+            (click)="useLocation()"
+            [disabled]="locationLoading"
+            aria-label="Use my location"
+          >
+            Use my location
+          </button>
+          <p *ngIf="formFeedback" class="form-feedback" [class.form-feedback--error]="formFeedback.kind === 'error'" role="status">
+            {{ formFeedback.text }}
+          </p>
+          <button type="submit" class="btn btn-primary" [disabled]="formSubmitting">
+            {{ formSubmitting ? 'Sending…' : 'Send' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p class="footer-tagline">Control Crest — professional TV mounting</p>
+      <p>Serving Broward and Palm Beach counties and surrounding South Florida.</p>
+      <p><a [href]="'tel:' + phone">{{ phone }}</a></p>
+    </div>
+  </footer>
+</main>

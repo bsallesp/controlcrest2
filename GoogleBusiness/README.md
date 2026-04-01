@@ -1,10 +1,24 @@
 # Google Business Profile — TV Mounting Boca Raton
 
-Strategy to grow the profile and **dominate the Google Maps 3-Pack** for searches like “tv mounting near me” in Boca Raton and nearby cities.
+Este módulo cobre **criação e manutenção** do perfil no Google (mapa, reviews, conteúdo). O **tráfego pago** (Google Ads) está em [`../PaidTraffic/README.md`](../PaidTraffic/README.md); use a **mesma URL de landing** e telefone em ambos ([`../CONFIG.md`](../CONFIG.md)).
+
+**Integração com anúncios:** no Ads, use extensão de **local** ligada a este GBP; reviews e fotos recentes melhoram conversão dos cliques pagos e o sinal local. Manutenção sugerida: posts semanais + fotos após jobs + pedido de review (ver secções 2–5 abaixo).
 
 ---
 
 **API Manager:** na pasta [api/](./api/) há um módulo Python para gerenciar o GBP via API (posts, reviews, contas/locais). Ver [api/README.md](./api/README.md).
+
+---
+
+## Manutenção contínua (checklist rápido)
+
+| Frequência | Ação |
+|------------|------|
+| Semanal | 1 post no GBP (templates em `weekly-posts-templates.md`); revisar novas reviews e responder |
+| Por trabalho | 3–6 fotos + upload; pedir review em 24–48 h (`review-script.md`) |
+| Mensal | Atualizar Q&A se surgirem dúvidas reais; conferir categorias, horários e área de atendimento |
+
+Setup inicial completo: [`checklist-setup.md`](./checklist-setup.md).
 
 ---
 

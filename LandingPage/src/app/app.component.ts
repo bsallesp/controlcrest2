@@ -1,25 +1,34 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { DOCUMENT, NgIf } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { environment } from '../environments/environment';
 import { GoogleMapsService } from './core/google-maps.service';
+import { applySeo } from './seo/apply-seo';
 import { LOG_CONTEXT, LoggerService } from './core/logger.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, NgIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [{ provide: LOG_CONTEXT, useValue: 'AppComponent' }]
 })
-export class AppComponent implements AfterViewInit, OnDestroy {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('placeAutocompleteContainer') placeAutocompleteContainerRef!: ElementRef<HTMLElement>;
   phone = environment.phone;
   locationLoading = false;
+  /** Disables submit while POST is in flight */
+  formSubmitting = false;
+  /** User-visible result of the last submit attempt */
+  formFeedback: { kind: 'success' | 'error'; text: string } | null = null;
   form = new FormGroup({
     name: new FormControl('', Validators.required),
     phone: new FormControl('', Validators.required),
-    contactPreference: new FormControl('', Validators.required),
     message: new FormControl(''),
     address: new FormControl('', Validators.required)
   });
@@ -29,8 +38,16 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private googleMaps: GoogleMapsService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private http: HttpClient,
+    @Inject(DOCUMENT) private document: Document,
+    private meta: Meta,
+    private title: Title
   ) {}
+
+  ngOnInit(): void {
+    applySeo(this.meta, this.title, this.document, environment.siteUrl, environment.phone);
+  }
 
   ngAfterViewInit(): void {
     this.logger.info('App initialized, setting up view');
@@ -132,16 +149,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   onSubmit(): void {
-    if (this.form.valid) {
-      this.logger.info('Form submitted', {
-        name: this.form.value.name,
-        phone: this.form.value.phone,
-        contactPreference: this.form.value.contactPreference,
-        hasMessage: !!this.form.value.message,
-        address: this.form.value.address
-      });
-      // TODO: send to backend
-    } else {
+    this.formFeedback = null;
+    if (!this.form.valid) {
       this.logger.debug('Form submit attempted but invalid', {
         errors: this.form.errors,
         controls: {
@@ -150,6 +159,69 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           address: this.form.get('address')?.errors
         }
       });
+      return;
     }
+
+    const payload = {
+      name: this.form.value.name as string,
+      phone: this.form.value.phone as string,
+      message: (this.form.value.message as string) || '',
+      address: this.form.value.address as string
+    };
+
+    this.logger.info('Form submitted', {
+      name: payload.name,
+      phone: payload.phone,
+      hasMessage: !!payload.message,
+      address: payload.address
+    });
+
+    const url = environment.contactApiUrl?.trim() ?? '';
+
+    if (!environment.production && !url) {
+      this.formFeedback = {
+        kind: 'success',
+        text: 'Dev mode: submissions are not sent. Set contactApiUrl in environment.development.ts to test the API.'
+      };
+      return;
+    }
+
+    if (!url || url.includes('PLACEHOLDER')) {
+      this.formFeedback = {
+        kind: 'error',
+        text: 'The form is not connected yet. Please call or text us — we will fix this shortly.'
+      };
+      return;
+    }
+
+    this.formSubmitting = true;
+    this.http
+      .post<{ ok: boolean }>(url, payload)
+      .pipe(
+        finalize(() => {
+          this.formSubmitting = false;
+        }),
+        catchError(() => {
+          this.formFeedback = {
+            kind: 'error',
+            text: 'Could not send your request. Please call or text us and we will help you right away.'
+          };
+          return of(null);
+        })
+      )
+      .subscribe((res) => {
+        if (res?.ok) {
+          this.formFeedback = {
+            kind: 'success',
+            text: 'Thanks — we received your request and will be in touch shortly.'
+          };
+          this.form.reset();
+        } else if (res !== null) {
+          this.formFeedback = {
+            kind: 'error',
+            text: 'Could not send your request. Please try again or call us.'
+          };
+        }
+      });
   }
 }
